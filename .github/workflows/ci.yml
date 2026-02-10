@@ -33,7 +33,7 @@ jobs:
 
       - name: Lint backend
         working-directory: backend
-        run: npm run lint   # falls du lint im backend hast
+        run: npm lint   # falls du lint im backend hast
 
   frontend:
     runs-on: ubuntu-latest
@@ -61,4 +61,4 @@ jobs:
 
       - name: Lint frontend
         working-directory: frontend/my-app
-        run: npm run lint
+        run: npm lint

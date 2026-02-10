@@ -6,12 +6,17 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 export default [
   js.configs.recommended,
 
-  // React + JSX Unterstützung (wichtig!)
-  pluginReact.configs.flat.recommended,      // oder .configs.flat["jsx-runtime"] wenn du den neuen JSX Transform nutzt
-  pluginReact.configs.flat["jsx-runtime"],   // ← oft besser bei Vite / React 17+, vermeidet "React not defined"
+  pluginReact.configs.flat.recommended,
+  pluginReact.configs.flat["jsx-runtime"],
 
-  // Optional aber sehr empfohlen: React Hooks Regeln
-  pluginReactHooks.configs.recommended,
+    {
+    plugins: {
+      "react-hooks": pluginReactHooks,
+    },
+    rules: {
+      ...pluginReactHooks.configs.recommended.rules,
+    },
+  },
 
   {
     files: ["**/*.{js,jsx}"],
@@ -20,10 +25,10 @@ export default [
       sourceType: "module",
       globals: {
         ...globals.browser,
-        ...globals.node, // falls du node-spezifische Dinge nutzt
+        ...globals.node, 
       },
       parserOptions: {
-        ecmaFeatures: { jsx: true }, // ← das aktiviert JSX-Parsing explizit
+        ecmaFeatures: { jsx: true }, // aktiviert JSX-Parsing explizit
       },
     },
     settings: {

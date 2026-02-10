@@ -1,24 +1,64 @@
-# CI workflow to build, test, and lint the CRUD app on push or pull request
 name: CI Pipeline
+
 on:
   push:
-    branches: [main] # Trigger on pushes to main branch
+    branches: [main]
   pull_request:
-    branches: [main] # Trigger on PRs to main branch
+    branches: [main]
+
 jobs:
-  build:
-    runs-on: ubuntu-latest # Use GitHub's free Linux runner
+  backend:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3 # Check out the repository code
-      - name: Set up Node.js # Install Node.js environment
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4          # besser v4 statt v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18' # Use Node.js 18 for consistency
-      - name: Cache dependencies # Cache node_modules to speed up builds
-        uses: actions/cache@v3
+          node-version: '18'
+
+      - name: Cache backend dependencies
+        uses: actions/cache@v4
         with:
-          path: ~/.npm # Cache npm’s global cache
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # Key based on OS and package-lock.json
-      - run: npm ci # Install dependencies reliably using package-lock.json
-      - run: npm test # Run tests defined in package.json
-      - run: npm run lint # Run ESLint to ensure code quality
+          path: ~/.npm
+          key: ${{ runner.os }}-node-backend-${{ hashFiles('backend/package-lock.json') }}
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Test backend
+        working-directory: backend
+        run: npm test
+
+      - name: Lint backend
+        working-directory: backend
+        run: npm run lint   # falls du lint im backend hast
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache frontend dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-frontend-${{ hashFiles('frontend/my-app/package-lock.json') }}
+
+      - name: Install frontend dependencies
+        working-directory: frontend/my-app
+        run: npm ci
+
+      - name: Test frontend
+        working-directory: frontend/my-app
+        run: npm test     # oder npm run test / build / lint – passe es an dein package.json an
+
+      - name: Lint frontend
+        working-directory: frontend/my-app
+        run: npm run lint
